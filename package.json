@@ -25,6 +25,7 @@
   "homepage": "https://github.com/opendenton/aerodenton#readme",
   "dependencies": {
     "axios": "^0.18.0",
+    "dotenv": "^7.0.0",
     "tabletojson": "^1.0.4"
   }
 }
