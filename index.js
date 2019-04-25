@@ -42,11 +42,19 @@ axios
   })
   .then(function(res) {
     const converted = tabletojson.convert(res.data);
+    // Always going to be the last table on the page (for now)
     let data = converted.pop();
     let storage = {
       timestamp: timestamp,
       site_id: params.select_site.split("|").pop()
     };
+
+    /**
+     * @todo use later
+     */
+    var date = new Date("2009-04-24 08:00:00").toLocaleString("en-US", {
+      timeZone: "America/Chicago"
+    });
 
     // Loop through rows in table.
     for (const item in data) {
