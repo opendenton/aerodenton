@@ -12,4 +12,4 @@ Aero Denton exists to support in extracting that data through automated web craw
 
 The screenshot below shows a snapshot of data collected using this tool.
 
-[! Aero Denton debug console](https://github.com/OpenDenton/aerodenton/blob/master/aero-console.png?raw=true)
+![Aero Denton debug console](https://github.com/OpenDenton/aerodenton/blob/master/aero-console.png?raw=true)
