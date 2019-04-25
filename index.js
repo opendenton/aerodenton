@@ -1,11 +1,23 @@
 const axios = require("axios");
 const tabletojson = require("tabletojson");
+const sqlite3 = require("sqlite3").verbose();
 require("dotenv").load();
 
-// Base TCEQ URL
+// INITIALIZATION
 const tceqUrl =
   "https://www.tceq.texas.gov/cgi-bin/compliance/monops/daily_summary.pl";
-const jsonstore = "https://api.jsonbin.io/b";
+// open the database
+let db = new sqlite3.Database("./db/tceq.db", err => {
+  if (err) {
+    console.error(err.message);
+  }
+  console.log("Connected to the TCEQ database.");
+});
+// Create base table
+db.run(
+  "CREATE TABLE sensors(timestamp site_id poc no no2 ozone wind_speed wind_dir wind_dir_std temp dew_point rel_h solar_rad prec pm25)"
+);
+///////////////////
 
 // Parameters to supply
 let params = {
@@ -70,30 +82,8 @@ axios
         storage[tmp.parameter] = tmp;
       }
     }
-
-    // Post to JSONstore
-    let options = {
-      method: "POST",
-      data: storage,
-      headers: {
-        "Content-Type": "application/json",
-        "secret-key": process.env["secret-key"],
-        "collection-id": process.env["collection-id"],
-        name: "tecq_" + timestamp,
-        private: false
-      },
-      url: jsonstore
-    };
-
-    console.log(storage);
-
-    axios(options)
-      .then(res => {
-        // console.log(res);
-      })
-      .catch(function(error) {
-        // console.log(error);
-      });
+    // WRITE TO DB
+    //////////////
   })
   .catch(function(error) {
     // console.log(error);
@@ -101,3 +91,46 @@ axios
   .then(function() {
     // always executed
   });
+
+db.serialize(() => {
+  db.each(
+    `SELECT PlaylistId as id,
+                  Name as name
+           FROM playlists`,
+    (err, row) => {
+      if (err) {
+        console.error(err.message);
+      }
+      console.log(row.id + "\t" + row.name);
+    }
+  );
+});
+
+db.close(err => {
+  if (err) {
+    console.error(err.message);
+  }
+  console.log("Close the database connection.");
+});
+
+function prepareRow(obj) {}
+
+function insertRow(obj) {
+  let cols = [];
+  let vals = [];
+  for (const key in object) {
+    if (object.hasOwnProperty(key)) {
+      const el = object[key];
+      cols.push(key);
+      vals.push(el);
+    }
+  }
+  let query =
+    "INSERT INTO 'sensors' (" +
+    cols.join(",") +
+    ") VALUES (" +
+    vals.join(",") +
+    ");";
+
+  return query;
+}

@@ -26,6 +26,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "dotenv": "^7.0.0",
+    "sqlite3": "^4.0.6",
     "tabletojson": "^1.0.4"
   }
 }
