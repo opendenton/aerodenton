@@ -1,0 +1,30 @@
+{
+  "name": "aerodenton",
+  "version": "1.0.0",
+  "description": "Aero Denton is an air quality monitoring project for the city of Denton, Texas.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opendenton/aerodenton.git"
+  },
+  "keywords": [
+    "air quality",
+    "crawler"
+  ],
+  "author": "kyletaylored@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/opendenton/aerodenton/issues"
+  },
+  "homepage": "https://github.com/opendenton/aerodenton#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "tabletojson": "^1.0.4"
+  }
+}
