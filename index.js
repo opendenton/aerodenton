@@ -1,22 +1,13 @@
 const axios = require("axios");
 const tabletojson = require("tabletojson");
-const sqlite3 = require("sqlite3").verbose();
-require("dotenv").load();
+const db = require("./util/db").db;
+const dbo = require("./util/db").dbo;
+const moment = require("moment");
+const dotenv = require("dotenv");
 
 // INITIALIZATION
 const tceqUrl =
   "https://www.tceq.texas.gov/cgi-bin/compliance/monops/daily_summary.pl";
-// open the database
-let db = new sqlite3.Database("./db/tceq.db", err => {
-  if (err) {
-    console.error(err.message);
-  }
-  console.log("Connected to the TCEQ database.");
-});
-// Create base table
-db.run(
-  "CREATE TABLE sensors(timestamp site_id poc no no2 ozone wind_speed wind_dir wind_dir_std temp dew_point rel_h solar_rad prec pm25)"
-);
 ///////////////////
 
 // Parameters to supply
@@ -69,8 +60,7 @@ axios
           delete row["Parameter Measured_4"];
         }
 
-        // Get POC
-        tmp["POC"] = row["POC_2"] ? row["POC_2"] : null;
+        // Delete POC
         delete row["POC_2"];
 
         // Get parameter name
@@ -99,46 +89,3 @@ axios
   .then(function() {
     // always executed
   });
-
-db.serialize(() => {
-  db.each(
-    `SELECT PlaylistId as id,
-                  Name as name
-           FROM playlists`,
-    (err, row) => {
-      if (err) {
-        console.error(err.message);
-      }
-      console.log(row.id + "\t" + row.name);
-    }
-  );
-});
-
-db.close(err => {
-  if (err) {
-    console.error(err.message);
-  }
-  console.log("Close the database connection.");
-});
-
-function prepareRow(obj) {}
-
-function insertRow(obj) {
-  let cols = [];
-  let vals = [];
-  for (const key in object) {
-    if (object.hasOwnProperty(key)) {
-      const el = object[key];
-      cols.push(key);
-      vals.push(el);
-    }
-  }
-  let query =
-    "INSERT INTO 'sensors' (" +
-    cols.join(",") +
-    ") VALUES (" +
-    vals.join(",") +
-    ");";
-
-  return query;
-}
