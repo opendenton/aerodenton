@@ -13,3 +13,11 @@ Aero Denton exists to support in extracting that data through automated web craw
 The screenshot below shows a snapshot of data collected using this tool.
 
 ![Aero Denton debug console](https://github.com/OpenDenton/aerodenton/blob/master/aero-console.png?raw=true)
+
+## Working Example
+
+With a bit of work, we were able to create a scraping tool for extracting data through the TCEQ URL by passing in parameters and converting the data table. From there, we can convert this to a JSON object and store in an InfluxDB and use Grafana to build time series charts.
+
+You can see a sample of the dashboard below at https://tceq.opendenton.com
+
+![Aero Denton Dashboard](https://github.com/OpenDenton/aerodenton/blob/master/aero-grafana.png?raw=true)
