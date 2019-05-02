@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from pprint import pprint
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -105,7 +107,7 @@ class TCEQ:
                 cObj = obj.copy()
                 if item[i] is not None and self.isInteger(i) and self.isfloat(item[i]):  # Check if key is number.
                     value = float(item[i])
-                    pprint(value)
+                    # pprint(value)
                     hour = int(i[0:2])  # Get hour
                     time = datetime(date.year, date.month, date.day, hour, 00).isoformat() + "Z"
                     cObj.update({"time": time, "fields": {"value": value}})
@@ -134,4 +136,6 @@ client.switch_database(os.getenv("INFLUXDB_DATABASE"))
 ts = datetime.utcnow().timestamp()
 data = tceq.get_json(timestamp=ts)
 influx = tceq.jsonbody_for_influx(data=data, timestamp=ts)
-client.write_points(influx)
+pprint(influx)
+#status = client.write_points(influx)
+#pprint(status)
