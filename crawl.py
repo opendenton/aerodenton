@@ -5,6 +5,10 @@ from datetime import datetime, timedelta
 import json
 import requests
 import pytz
+import os
+from influxdb import InfluxDBClient
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class TCEQ:
@@ -80,12 +84,52 @@ class TCEQ:
 
     def get_json(self, timestamp=None):
         data = self.get_table(timestamp=timestamp)
-        data = data.rename(columns={"Parameter Measured": "param"}).iloc[:-3, 0:25]
+        data = data.rename(columns={"Parameter Measured": "measurement"}).iloc[:-3, 0:25]
         return data.to_json(orient="records")
+
+    # @todo add support for site id
+    def jsonbody_for_influx(self, data, timestamp):
+        date = datetime.fromtimestamp(timestamp)
+        items = []
+        data = json.loads(data)
+        for item in data:
+            # Create initial object.
+            obj = {"measurement": "", "time": "", "fields": {"value": None}}
+            # Extract measurement name first.
+            if item["measurement"]:
+                m = item["measurement"].strip()
+                obj.update({"measurement": m})
+
+            # Loop through rest of the timestamps.
+            for i in item:
+                cObj = obj.copy()
+                if self.isInteger(i) and self.isfloat(item[i]):  # Check if key is number.
+                    value = float(item[i])
+                    pprint(value)
+                    hour = int(i[0:2])  # Get hour
+                    time = datetime(date.year, date.month, date.day, hour, 00).isoformat() + "Z"
+                    cObj.update({"time": time, "fields": {"value": value}})
+                    items.append(cObj)
+        return items
+
+    def isfloat(self, value):
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
+    def isInteger(self, value):
+        try:
+            int(value)
+            return True
+        except ValueError:
+            return False
 
 
 tceq = TCEQ()
-
+client = InfluxDBClient(host=os.getenv("INFLUXDB_HOST"), port=8086, username=os.getenv("INFLUXDB_USER"), password=os.getenv("INFLUXDB_PASSWORD"))
+client.switch_database(os.getenv("INFLUXDB_DATABASE"))
 
 start_date = datetime(2009, 1, 1)
 end_date = datetime.utcnow()
@@ -95,9 +139,12 @@ count = 0
 for single_date in tceq.daterange(start_date, end_date):
     ts = single_date.timestamp()
     data = tceq.get_json(timestamp=ts)
-    pprint(data)
+    influx = tceq.jsonbody_for_influx(data=data, timestamp=ts)
+    pprint(influx)
+    client.write_points(influx)
+    pprint("Processing: " + single_date.isoformat())
     count += 1
-    if count > 10:
-        break
+    # if count > 0:
+    #     break
 
-    # print single_date.strftime("%Y-%m-%d")
+# print single_date.strftime("%Y-%m-%d")
