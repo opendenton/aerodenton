@@ -8,6 +8,7 @@ import json
 import requests
 import pytz
 import os
+import syslog
 from influxdb import InfluxDBClient
 from dotenv import load_dotenv
 load_dotenv()
@@ -138,4 +139,6 @@ data = tceq.get_json(timestamp=ts)
 influx = tceq.jsonbody_for_influx(data=data, timestamp=ts)
 pprint(influx)
 status = client.write_points(influx)
-#pprint(status)
+pprint("influxdb write status: " + str(status))
+
+syslog.syslog("Processed today.py. InfluxDB write: " + str(status))
