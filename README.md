@@ -20,4 +20,4 @@ With a bit of work, we were able to create a scraping tool for extracting data t
 
 You can see a sample of the dashboard below at https://tceq.opendenton.com
 
-![Aero Denton Dashboard](https://github.com/OpenDenton/aerodenton/blob/master/aero-grafana.png?raw=true)
+![Aero Denton Dashboard](https://github.com/OpenDenton/aerodenton/blob/master/aero-grafana.jpg?raw=true)
